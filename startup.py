@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # Creation script - this creates a client process and a set of server databases (all locally) that will conduct Goldbergs PIR protocol
 # PIR - Goldbergs Protocol
-#CS 54701 Project- Craig West & Michael Kouremetis
+# CS 54701 Project- Craig West & Michael Kouremetis
 
-import os
+from subprocess import Popen
 import sys
 import time
 import argparse
+
 
 parser = argparse.ArgumentParser(description='Launch the Client and DB for PIR')
 parser.add_argument("-n", "--n", type=int, dest='l_num_datab', nargs='?', default=2, help="the # of databases for the system")
@@ -20,12 +21,12 @@ args = parser.parse_args()
 
 # Set up databases (servers) first
 #this opens up a terminal for every server started so can observe it
-for index in range(0, args.l_num_datab):
-    os.system('''gnome-terminal -e 'bash -c "python PIR-Goldberg-DB.py {0} {1}"' '''.format(index, args.datab_config))
-
+for index in xrange(0, args.l_num_datab):
+    time.sleep(1)
+    Popen('''gnome-terminal -e 'bash -c "python PIR-Goldberg-DB.py {0} {1}"' '''.format(index, args.datab_config), shell=True)
 
 time.sleep(3)
 
 #Set up client
-os.system('''gnome-terminal -e 'bash -c "python PIR-Goldberg-Client.py {0} {1} {2} {3} {4} {5}"'  '''.format(args.l_num_datab, args.t_priv_num_datab,
-    args.k_req_num_datab, args.v_byz_num_datab, args.query_set_fn, args.datab_config))
+Popen('''gnome-terminal -e 'bash -c "python PIR-Goldberg-Client.py {0} {1} {2} {3} {4} {5}"'  '''.format(args.l_num_datab, args.t_priv_num_datab,
+    args.k_req_num_datab, args.v_byz_num_datab, args.query_set_fn, args.datab_config), shell=True)
