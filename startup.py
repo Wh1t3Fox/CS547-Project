@@ -28,5 +28,5 @@ for index in xrange(0, args.l_num_datab):
 time.sleep(3)
 
 #Set up client
-Popen('''gnome-terminal -e 'bash -c "python PIR-Goldberg-Client.py -n {0} -c {1} -r {2} -m {3} -q {4} -d {5}"'  '''.format(args.l_num_datab, args.t_priv_num_datab,
+Popen('''gnome-terminal -e 'bash -c "python client.py -n {0} -c {1} -r {2} -m {3} -q {4} -d {5}"'  '''.format(args.l_num_datab, args.t_priv_num_datab,
     args.k_req_num_datab, args.v_byz_num_datab, args.query_set_fn, args.datab_config), shell=True)
