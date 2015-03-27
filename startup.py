@@ -23,7 +23,7 @@ args = parser.parse_args()
 #this opens up a terminal for every server started so can observe it
 for index in xrange(0, args.l_num_datab):
     time.sleep(1)
-    Popen('''gnome-terminal -e 'bash -c "python PIR-Goldberg-DB.py {0} {1}"' '''.format(index, args.datab_config), shell=True)
+    Popen('''gnome-terminal -e 'bash -c "python server.py -i {0} -d {1}"' '''.format(index, args.datab_config), shell=True)
 
 time.sleep(3)
 
