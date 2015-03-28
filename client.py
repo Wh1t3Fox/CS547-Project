@@ -94,7 +94,7 @@ try:
             datab_ports.append(row[1])
 except IOError:
     print "[-] IO error on {0}".format(args.datab_config)
-    
+
 print "\n----------Have list of databases-----------\n"
 print datab_hosts
 
@@ -105,13 +105,13 @@ for idx, q in enumerate(queries):
     L_indices = list(set( ))
     while len(L_indices) < args.l_num_datab:
         L_indices.append(choice(shamir_indices_I))
-    
+
     print "\n---------- created L indices (x inputs)------------\n"
     print L_indices
     #choose/create r random polynomials f-1 ... f-r of degree t. The coefficients are random, the constant terms are 0's except for 1 where r = q (query number)
     r_polyFunc = [ ]
     for x in xrange(r_numRecords):
-        if(x ==q):
+        if x == int(q):
             r_polyFunc.append(createShamirPoly( args.t_priv_num_datab, 1,n_mod ) )
         else:
             r_polyFunc.append(createShamirPoly( args.t_priv_num_datab, 0, n_mod ) )
