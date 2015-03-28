@@ -68,7 +68,7 @@ try:
             datab_hosts.append(row[0])
             datab_ports.append(row[1])
 except IOError:
-    print" IO error on ", args.datab_config
+    print "[-] IO error on {0}".format(args.datab_config)
 
 
 print "Have list of databases..."
