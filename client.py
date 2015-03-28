@@ -17,7 +17,7 @@ import csv
 import argparse
 from Util import *
 from Crypto.Util.number import getPrime
-from random import randint,  choice
+from random import randint, choice
 import pickle
 
 
@@ -101,11 +101,10 @@ for idx, q in enumerate(queries):
     print " conducting query"
    # Choose L random distinct indices alpha-1...alpha-l from set II
     L_indices = list(set( ))
-    while L_indices < args.l_num_datab:
-        L_indices.add(choice(shamir_indices_I))
-
+    while len(L_indices) < args.l_num_datab:
+        L_indices.append(choice(shamir_indices_I))
+    
     print " created L indices (x inputs)"
-
     #choose/create r random polynomials f-1 ... f-r of degree t. The coefficients are random, the constant terms are 0's except for 1 where r = q (query number)
     r_polyFunc = [ ]
     for x in xrange(r_numRecords):
