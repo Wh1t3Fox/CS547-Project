@@ -31,7 +31,7 @@ def query( hostname,  port,  data_to_send):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(serv_addr)
     try:
-        data_to_send = pickle.dumps(pi_server_vectors)
+        data_to_send = pickle.dumps(data_to_send)
         s.sendall(data_to_send)
         data = s.recv(32)
         print data
@@ -130,5 +130,5 @@ for idx, q in enumerate(queries):
     for idx2, x in enumerate(datab_hosts):
         print " querying database: {0} {1} for query {2}: {3}".format(datab_hosts[idx2], datab_ports[idx2], idx, q)
         time.sleep(3)
-        response = query(datab_hosts[idx2],  datab_ports[idx2],  q)
+        response = query(datab_hosts[idx2],  datab_ports[idx2],  pi_server_vectors[idx2])
     #decode response
