@@ -9,16 +9,25 @@ import socket
 import time
 import csv
 import argparse
+from Util import *
 
 dbs = [ ]     #this holds all the information from the database config file; this database instance will use its
               #specified index to get the parameters for its own database
 
+#more parameters
+db_tsize_bits = 320
+block_size_bits = 32   #aka record size
+word_size_bits = 8
+r_numRecords = db_tsize_bits/block_size_bits
+s_words_per_block = block_size_bits/word_size_bits
 
 #client thread handler
-def client_handler(client):
-    d = client.recv(16)
-    print "received from client:", d
-    s = "server request confirmation"
+def client_handler(client,  db_cont):
+    d = client.recv(r_numRecords * block_size_bits)
+    print "received from client:" + d  +  "bits"
+    p_i = pickle.loads(d)
+    print "pi vector from client: " + p_i
+    s = matrixMult(p_i, db_cont)
     client.sendall(s)
     client.close()
 
@@ -42,9 +51,22 @@ except IOError:
 #get database config info for this database
 server_addr = dbs[args.index][0] , int(dbs[args.index][1])   #host , port
 db_type = dbs[args.index][2] # types : 0 = normal database   1= dont respond 2 =  erroneous 3 = malicious
-db_cont = dbs[args.index][3]
+db_cont_fn = dbs[args.index][3]
+
 
 #read in database content for this database
+db_cont = [ ]   #list  of rows of the db, a row is a record. For now , 1 record is 4 - 8 bit numbers
+try:
+    with open(db_cont_fn ,"r") as csvfile:
+        d = csv.reader(csvfile, delimiter = ',')
+        for row in d:
+            tmp = [row[0],  row[1],  row[2],  row[3]]
+            db_cont.append(tmp)
+except IOError:
+    print" IO error on ", db_cont_fn
+    time.sleep(3)
+
+
 #start database
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.bind(server_addr)
@@ -56,7 +78,7 @@ while True:
     try:
         client, client_addr = sock.accept()
         print 'connection from {0}'.format(client_addr)
-        t = threading.Thread(target = client_handler,  args = [client])
+        t = threading.Thread(target = client_handler,  args = [client, db_cont])
         t.start()     #pop a thread off to handle request
 
     except:
