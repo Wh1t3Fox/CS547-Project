@@ -15,7 +15,7 @@ import socket
 import time
 import csv
 import argparse
-import Util
+from Util import *
 from Cyrpto.Util.number import getPrime
 from random import randint,  choice
 import pickle
