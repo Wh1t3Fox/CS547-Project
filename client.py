@@ -18,6 +18,8 @@ import argparse
 import Util
 from Cyrpto.Util.number import getPrime
 from random import randint,  choice
+import pickle
+
 
 queries = [ ]      # list of query indexes
 datab_hosts = [ ]  #list of database hosts to use
@@ -29,6 +31,7 @@ def query( hostname,  port,  data_to_send):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(serv_addr)
     try:
+        data_to_send = pickle.dumps(pi_server_vectors)
         s.sendall(data_to_send)
         data = s.recv(32)
         print data
@@ -52,7 +55,7 @@ print " -- PIR-Goldberg Client --"
 #more parameters
 db_tsize_bits = 320
 block_size_bits = 32   #aka record size
-word_size_bits = 8    
+word_size_bits = 8
 r_numRecords = db_tsize_bits/block_size_bits
 s_words_per_block = block_size_bits/word_size_bits
 
@@ -90,7 +93,7 @@ try:
             datab_ports.append(row[1])
 except IOError:
     print "[-] IO error on {0}".format(args.datab_config)
-    
+
 print "Have list of databases..."
 
 #Conduct queries
@@ -100,9 +103,9 @@ for idx, q in enumerate(queries):
     L_indices = set( )
     while L_indices < l_num_datab:
         L_indices.add(choice(shamir_indices_I))
-        
+
     print " created L indices (x inputs)"
-    
+
     #choose/create r random polynomials f-1 ... f-r of degree t. The coefficients are random, the constant terms are 0's except for 1 where r = q (query number)
     r_polyFunc = [ ]
     for x in xrange(r_numRecords):
@@ -110,9 +113,9 @@ for idx, q in enumerate(queries):
             r_polyFunc.append(createShamirPoly( t_priv_num_datab, 1,n_mod ) )
         else:
             r_polyFunc.append(createShamirPoly( t_priv_num_datab, 0, n_mod ) )
-            
+
     print " created r(num of records) shamir polynomials "
-    
+
     #get p-i 's ( output y) using each corresponding value in L_indices and r_poly_func. Each server will outputs from every poly function
     pi_server_vectors = [ ]
     for c in xrange(l_num_datab):
@@ -120,9 +123,9 @@ for idx, q in enumerate(queries):
         for f in xrange( r_numRecords):
             p.append(polyEval(r_poly_func[f],L_indices[c] ))
         pi_server_vectors.append(p)
-        
+
     print " created p_i's(vectors of y outputs with each 1 indice and all poly functions)  "
-    
+
     #make database connections
     #conduct communication
     for idx2, x in enumerate(datab_hosts):
