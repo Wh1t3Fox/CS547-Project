@@ -10,6 +10,7 @@ import time
 import csv
 import argparse
 from Util import *
+import pickle
 
 dbs = [ ]     #this holds all the information from the database config file; this database instance will use its
               #specified index to get the parameters for its own database
@@ -24,16 +25,16 @@ s_words_per_block = block_size_bits/word_size_bits
 #client thread handler
 def client_handler(client,  db_cont):
     d = client.recv(r_numRecords * block_size_bits)
-    print "received from client:" + d  +  "bits"
+    print "received from client:" + str(len(d))  +  "bits"
     p_i = pickle.loads(d)
-    print "pi vector from client: " + p_i
-    s = matrixMult(p_i, db_cont)
+    print "pi vector from client: " + str( p_i)
+    s = pickle.dumps(matrixMult(p_i, db_cont))
     client.sendall(s)
     client.close()
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--index", type=int, dest='index', help="the row index of the database config file that corresponds to this database")
-parser.add_argument("-d", "--database", dest='datab_config', help="filename of set of databases addresses to use; format is (host, port, db type, db content) , one per line")
+parser.add_argument("-i", "--index", type=int, dest='index', required = True,  help="the row index of the database config file that corresponds to this database")
+parser.add_argument("-d", "--database", dest='datab_config', required = True,  help="filename of set of databases addresses to use; format is (host, port, db type, db content) , one per line")
 args = parser.parse_args()
 
 #read in database info of all databases
@@ -71,7 +72,7 @@ except IOError:
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.bind(server_addr)
 sock.listen(5)
-print " -- Database Server -- Type {0}".format(db_type)
+print "--------- Database Server -- Type {0}--------------".format(db_type)
 print " Ready -  server address : {0}".format(server_addr)
 time.sleep(3)
 while True:

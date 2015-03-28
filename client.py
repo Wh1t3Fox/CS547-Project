@@ -31,9 +31,10 @@ def query( hostname,  port,  data_to_send):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(serv_addr)
     try:
-        data_to_send = pickle.dumps(data_to_send)
-        s.sendall(data_to_send)
-        data = s.recv(32)
+        pickle_data = pickle.dumps(data_to_send)
+        print " Sending Database:",  data_to_send
+        s.sendall(pickle_data)
+        data =pickle.loads( s.recv(100))
         print data
         #recieve data, not sure of format yet
     except:
@@ -42,7 +43,7 @@ def query( hostname,  port,  data_to_send):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-l", "--servers", type=int, dest='l_num_datab', default=2, help="the # of databases for the system")
-parser.add_argument("-t", "--collude", type=int, dest='t_priv_num_datab', default=0, help="the # of databases that can collude and still not obtain query, t+1 servers must collude to break IT-PIR")
+parser.add_argument("-t", "--collude", type=int, dest='t_priv_num_datab', default=2, help="the # of databases that can collude and still not obtain query, t+1 servers must collude to break IT-PIR")
 parser.add_argument("-r", "--respond", type=int, dest='k_req_num_datab', default=0, help="the # of databases that need to respond to query and query still be successfully retrieved")
 parser.add_argument("-m", "--malicious", type=int, dest='v_byz_num_datab', default=0, help="the # of databases ( v of k ) that can be malicious, i.e. lie or be erroneous for query to still be successful")
 parser.add_argument("-q", "--query", dest='query_set_fn', default='PIR-Queries.csv', help="filename of set of queries to make the servers; format of file is probably just indexes  by csv , 10 per row")
@@ -50,7 +51,7 @@ parser.add_argument("-d", "--database", dest='datab_config', default='PIR-Databa
 parser.add_argument("-v", "--verbose", action="store_true", help="test output")
 args = parser.parse_args()
 
-print " -- PIR-Goldberg Client --"
+print "\n-------------- PIR-Goldberg Client------------\n"
 
 #more parameters
 db_tsize_bits = 320
@@ -60,8 +61,8 @@ r_numRecords = db_tsize_bits/block_size_bits
 s_words_per_block = block_size_bits/word_size_bits
 
 #integer field parameters for Shamir Polynomials
-p = getPrime(2**word_size_bits)
-q = getPrime(2**word_size_bits)
+p = getPrime(word_size_bits)
+q = getPrime(word_size_bits)
 n_mod = p*q
 shamir_indices_I = [ ]
 
@@ -80,7 +81,7 @@ try:
 except IOError:
     print "[-] IO error on {0}".format(args.query_set_fn)
 
-print "Have list of queries to make..."
+print "\n------Have list of queries to make------------\n"
 
 # read in databases addresses
 #technically this config file does have the information on which databases are malicious/good but this information
@@ -93,18 +94,20 @@ try:
             datab_ports.append(row[1])
 except IOError:
     print "[-] IO error on {0}".format(args.datab_config)
-
-print "Have list of databases..."
+    
+print "\n----------Have list of databases-----------\n"
+print datab_hosts
 
 #Conduct queries
 for idx, q in enumerate(queries):
-    print " conducting query"
+    print " conducting query , query index: "  + str(q)
    # Choose L random distinct indices alpha-1...alpha-l from set II
     L_indices = list(set( ))
     while len(L_indices) < args.l_num_datab:
         L_indices.append(choice(shamir_indices_I))
     
-    print " created L indices (x inputs)"
+    print "\n---------- created L indices (x inputs)------------\n"
+    print L_indices
     #choose/create r random polynomials f-1 ... f-r of degree t. The coefficients are random, the constant terms are 0's except for 1 where r = q (query number)
     r_polyFunc = [ ]
     for x in xrange(r_numRecords):
@@ -113,8 +116,8 @@ for idx, q in enumerate(queries):
         else:
             r_polyFunc.append(createShamirPoly( args.t_priv_num_datab, 0, n_mod ) )
 
-    print " created r(num of records) shamir polynomials "
-
+    print "\n---------------created r(num of records) shamir polynomials--------------\n "
+    print r_polyFunc
     #get p-i 's ( output y) using each corresponding value in L_indices and r_polyFunc. Each server will outputs from every poly function
     pi_server_vectors = [ ]
     for c in xrange(args.l_num_datab):
@@ -123,8 +126,8 @@ for idx, q in enumerate(queries):
             p.append(polyEval(r_polyFunc[f],L_indices[c] ))
         pi_server_vectors.append(p)
 
-    print " created p_i's(vectors of y outputs with each 1 indice and all poly functions)  "
-
+    print "\n------created p_i's(vectors of y outputs )----- \n "
+    print pi_server_vectors
     #make database connections
     #conduct communication
     for idx2, x in enumerate(datab_hosts):
