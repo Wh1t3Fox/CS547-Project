@@ -3,6 +3,11 @@
 # PIR - Goldbergs Protocol
 # CS 54701 Project- Craig West & Michael 
 
+#TODO: do all of our multiplications need to be mod n?
+#all coefficients in the created polynomials must be in Zn
+#the polyEval function must produce outputs in Zn
+#
+
 from random import randint
 import sys
 
