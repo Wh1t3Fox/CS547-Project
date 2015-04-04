@@ -17,12 +17,7 @@ dbs = [ ]     #this holds all the information from the database config file; thi
               #specified index to get the parameters for its own database
 
 
-#more parameters
-db_tsize_bits = parser.get('params', 'db_tsize_bits')
-block_size_bits = parser.get('params', 'block_size_bits')   #aka record size
-word_size_bits = parser.get('params', 'word_size_bits')
-r_numRecords = db_tsize_bits/block_size_bits
-s_words_per_block = block_size_bits/word_size_bits
+
 
 #client thread handler
 def client_handler(client,  db_cont):
@@ -47,11 +42,12 @@ parser = SafeConfigParser()
 parser.read('config.ini')
 
 #more parameters
-db_tsize_bits = parser.get('params', 'db_tsize_bits')
-block_size_bits = parser.get('params', 'block_size_bits')   #aka record size
-word_size_bits = parser.get('params', 'word_size_bits')
+db_tsize_bits = int(parser.get('params', 'db_tsize_bits'))
+block_size_bits = int(parser.get('params', 'block_size_bits'))   #aka record size
+word_size_bits = int(parser.get('params', 'word_size_bits'))
 r_numRecords = db_tsize_bits/block_size_bits
 s_words_per_block = block_size_bits/word_size_bits
+
 
 #read in database info of all databases
 try:
