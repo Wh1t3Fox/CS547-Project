@@ -9,15 +9,17 @@
 #sends to shares to data bases with query emedded
 # gets responses from databases and constructs query response
 
+
+from Crypto.Util.number import getPrime
+from ConfigParser import SafeConfigParser
+from random import randint, choice
+from Util import *
 import sys
 import os
 import socket
 import time
 import csv
 import argparse
-from Util import *
-from Crypto.Util.number import getPrime
-from random import randint, choice
 import pickle
 
 
@@ -43,22 +45,24 @@ def query( hostname,  port,  data_to_send,  n_mod):
         print "[-] ERROR: tried to send/recieve a query request to database: {0}".format(serv_addr)
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-l", "--servers", type=int, dest='l_num_datab', default=2, help="the # of databases for the system")
-parser.add_argument("-t", "--collude", type=int, dest='t_priv_num_datab', default=2, help="the # of databases that can collude and still not obtain query, t+1 servers must collude to break IT-PIR")
-parser.add_argument("-r", "--respond", type=int, dest='k_req_num_datab', default=0, help="the # of databases that need to respond to query and query still be successfully retrieved")
-parser.add_argument("-m", "--malicious", type=int, dest='v_byz_num_datab', default=0, help="the # of databases ( v of k ) that can be malicious, i.e. lie or be erroneous for query to still be successful")
-parser.add_argument("-q", "--query", dest='query_set_fn', default='PIR-Queries.csv', help="filename of set of queries to make the servers; format of file is probably just indexes  by csv , 10 per row")
-parser.add_argument("-d", "--database", dest='datab_config', default='PIR-Databases.csv', help="filename of set of databases addresses to use; format is (host, port, db type) , one per line")
-parser.add_argument("-v", "--verbose", action="store_true", help="test output")
-args = parser.parse_args()
+argsparser = argparse.ArgumentParser()
+argsparser.add_argument("-l", "--servers", type=int, dest='l_num_datab', default=2, help="the # of databases for the system")
+argsparser.add_argument("-t", "--collude", type=int, dest='t_priv_num_datab', default=2, help="the # of databases that can collude and still not obtain query, t+1 servers must collude to break IT-PIR")
+argsparser.add_argument("-r", "--respond", type=int, dest='k_req_num_datab', default=0, help="the # of databases that need to respond to query and query still be successfully retrieved")
+argsparser.add_argument("-m", "--malicious", type=int, dest='v_byz_num_datab', default=0, help="the # of databases ( v of k ) that can be malicious, i.e. lie or be erroneous for query to still be successful")
+argsparser.add_argument("-q", "--query", dest='query_set_fn', default='PIR-Queries.csv', help="filename of set of queries to make the servers; format of file is probably just indexes  by csv , 10 per row")
+argsparser.add_argument("-d", "--database", dest='datab_config', default='PIR-Databases.csv', help="filename of set of databases addresses to use; format is (host, port, db type) , one per line")
+argsparser.add_argument("-v", "--verbose", action="store_true", help="test output")
+args = argsparser.parse_args()
 
-print "\n-------------- PIR-Goldberg Client------------\n"
+parser = SafeConfigParser()
+parser.read('config.ini')
 
 #more parameters
-db_tsize_bits = 128
-block_size_bits = 32   #aka record size
-word_size_bits = 8
+
+db_tsize_bits = int(parser.get('params', 'db_tsize_bits'))
+block_size_bits = int(parser.get('params', 'block_size_bits'))   #aka record size
+word_size_bits = int(parser.get('params', 'word_size_bits'))
 r_numRecords = db_tsize_bits/block_size_bits
 s_words_per_block = block_size_bits/word_size_bits
 
@@ -68,7 +72,11 @@ q = getPrime(word_size_bits)
 n_mod = p*q
 shamir_indices_I = [ ]
 
+
 print " Databases: " + str(args.l_num_datab) + "  Records: " + str(r_numRecords)  + " Database Config File: " + str(args.datab_config) + " Queries Config File: " + str(args.query_set_fn) + " Interger Ring: " + str(n_mod)  + " p:" + str(p) + " q:" + str(q)
+
+print "\n-------------- PIR-Goldberg Client------------\n"
+
 
 #getting set II which is a set of proper indices ( x input values) to use with the poly functions on Shamir
 #for x in xrange(0, 8*args.l_num_datab):    #8 is just a random factor, to make the total indice size to draw from 8x as big as needed

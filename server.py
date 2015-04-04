@@ -3,22 +3,24 @@
 # PIR - Goldbergs Protocol
 # CS 54701 Project- Craig West & Michael Kouremetis
 
+from ConfigParser import SafeConfigParser
+from Util import *
 import sys
 import threading
 import socket
 import time
 import csv
 import argparse
-from Util import *
 import pickle
 
 dbs = [ ]     #this holds all the information from the database config file; this database instance will use its
               #specified index to get the parameters for its own database
 
+
 #more parameters
-db_tsize_bits = 128
-block_size_bits = 32   #aka record size
-word_size_bits = 8
+db_tsize_bits = parser.get('params', 'db_tsize_bits')
+block_size_bits = parser.get('params', 'block_size_bits')   #aka record size
+word_size_bits = parser.get('params', 'word_size_bits')
 r_numRecords = db_tsize_bits/block_size_bits
 s_words_per_block = block_size_bits/word_size_bits
 
@@ -36,10 +38,20 @@ def client_handler(client,  db_cont):
     print "-------------------------------------------------------"
     client.close()
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--index", type=int, dest='index', required = True,  help="the row index of the database config file that corresponds to this database")
-parser.add_argument("-d", "--database", dest='datab_config', required = True,  help="filename of set of databases addresses to use; format is (host, port, db type, db content) , one per line")
-args = parser.parse_args()
+argsparser = argparse.ArgumentParser()
+argsparser.add_argument("-i", "--index", type=int, dest='index', required = True,  help="the row index of the database config file that corresponds to this database")
+argsparser.add_argument("-d", "--database", dest='datab_config', required = True,  help="filename of set of databases addresses to use; format is (host, port, db type, db content) , one per line")
+args = argsparser.parse_args()
+
+parser = SafeConfigParser()
+parser.read('config.ini')
+
+#more parameters
+db_tsize_bits = parser.get('params', 'db_tsize_bits')
+block_size_bits = parser.get('params', 'block_size_bits')   #aka record size
+word_size_bits = parser.get('params', 'word_size_bits')
+r_numRecords = db_tsize_bits/block_size_bits
+s_words_per_block = block_size_bits/word_size_bits
 
 #read in database info of all databases
 try:
