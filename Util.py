@@ -60,7 +60,7 @@ def matrixMult(m1,  m2,  mod):
 def createShamirPoly( deg,  constant,  bound):
     #print " in create poly, passed:  deg "  + str(deg) + " constant " + str(constant) + "  bound " + str(bound)
     if int(deg)<0:
-        print(" ERROR: Degree of polynomial requested < 0")
+        print("{0}[-] ERROR: Degree of polynomial requested < 0{1}".format(COLORS['FAIL'], COLORS['ENDC']))
         sys.exit(1)
     output = [constant]
     for x in xrange(0, deg-1):    #this originally had just "deg" but this was wrong it was created polynomials 1 degree bigger than needed
@@ -80,7 +80,7 @@ def fastLagrangeInter_interceptOnly(points, n_mod):
             if (idx2 !=idx):
                 #print "point on: " + str(points[idx2][0]) + "," + str(points[idx2][1])
                 #print " doing: " + str(L) + " * (-" + str(points[idx2][0]) + " ) / (" + str(point[0]) + "- " + str(points[idx2][0]) + " )"
-                L = L * (-points[idx2][0]/(point[0] -points[idx2][0]))
+                L *= (-points[idx2][0]/(point[0] -points[idx2][0]))
                 #print " L = " + str(L)
         #print " f="  + str(f) + "+( " + str(L) + "*" +str(point[1]) + ")"
         f = f + (L * point[1])
