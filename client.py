@@ -145,10 +145,10 @@ for idx, q in enumerate(queries):
     print "{0}[+] Created r(num of records) shamir polynomials:{1}{2} \n{3}{4}\n".format(COLORS['OKGREEN'], COLORS['ENDC'], COLORS['OKBLUE'], '\n'.join(str(x) for x in r_polyFunc), COLORS['ENDC'])
     #get p-i 's ( output y) using each corresponding value in L_indices and r_polyFunc. Each server will outputs from every poly function
     pi_server_vectors = [ ]
-    for c in xrange(args.l_num_datab):
+    for c in L_indices:
         p = [ ]
-        for f in xrange( r_numRecords):
-            p.append(polyEval(r_polyFunc[f],L_indices[c] , n_mod))
+        for f in r_polyFunc:
+            p.append(polyEval(f, c, n_mod))
         pi_server_vectors.append(p)
 
     print "{0}[+] Created p_i s(vectors of y outputs ):{1}{2} \n{3}{4}\n".format(COLORS['OKGREEN'], COLORS['ENDC'], COLORS['OKBLUE'], '\n'.join(str(x) for x in pi_server_vectors), COLORS['ENDC'])
