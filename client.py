@@ -70,7 +70,7 @@ s_words_per_block = block_size_bits/word_size_bits
 p = getPrime(word_size_bits)
 q = getPrime(word_size_bits)
 n_mod = p*q
-shamir_indices_I = [ ]
+shamir_indices_I = []
 
 print "\n{0}-------------- PIR-Goldberg Client------------{1}\n".format(COLORS['HEADER'], COLORS['ENDC'])
 
@@ -81,14 +81,15 @@ print "{0}[+] Queries Config File:{1}{2} {3}{4}".format(COLORS['OKGREEN'], COLOR
 print "{0}[+] Interger Ring:{1}{2} {3} p: {4} q: {5}".format(COLORS['OKGREEN'], COLORS['ENDC'], COLORS['OKBLUE'], str(n_mod), str(p), str(q), COLORS['ENDC'])
 
 
+########TODO shamir indices above need to be 1,2,3,4,5 etc... the interpolation doesnt work well with random x inputs
 #getting set II which is a set of proper indices ( x input values) to use with the poly functions on Shamir
-#for x in xrange(0, 8*args.l_num_datab):    #8 is just a random factor, to make the total indice size to draw from 8x as big as needed
+#for x in xrange(0, args.l_num_datab):    #8 is just a random factor, to make the total indice size to draw from 8x as big as needed
 #   temp = randint(1, min(p, q)-1)
-#    shamir_indices_I.append(temp)
+#   shamir_indices_I.append(temp)
 
 for x in xrange(args.l_num_datab):
     shamir_indices_I.append(x +1)
-########TODO shamir indices above need to be 1,2,3,4,5 etc... the interpolation doesnt work well with random x inputs
+
 
 # read in qeuries to make to databases
 try:
@@ -169,7 +170,8 @@ for idx, q in enumerate(queries):
     record = []
     for c in xrange(s_words_per_block):
         pts = []
-        for idx, x in enumerate(L_indices):
+        #make sure we only use idx for the number of DB we have
+        for idx, x in enumerate(L_indices[0:len(datab_hosts)]):
             tmp = [x, Rs[idx][c]]
             pts.append(tmp)
         print "{0}[+] Points made:{1}{2} {3}{4}".format(COLORS['OKGREEN'], COLORS['ENDC'], COLORS['OKBLUE'], ''.join(str(x) for x in pts), COLORS['ENDC'])
