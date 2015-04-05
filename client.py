@@ -176,3 +176,7 @@ for idx, q in enumerate(queries):
             record.append(intercept % n_mod )
     print "[+] Record Retrieved: " + str(record)
     print"--------------------------------------------------------------"
+
+#used to keep the terminal open
+#until you want to close
+raw_input()
