@@ -3,11 +3,10 @@
 # PIR - Goldbergs Protocol
 # CS 54701 Project- Craig West & Michael Kouremetis
 
-from subprocess import Popen
+from subprocess import Popen, call
 import sys
 import time
 import argparse
-
 
 parser = argparse.ArgumentParser(description='Launch the Client and DB for PIR')
 parser.add_argument("-n", "--n", type=int, dest='l_num_datab', nargs='?', default=2, help="the # of databases for the system")
@@ -23,10 +22,9 @@ args = parser.parse_args()
 #this opens up a terminal for every server started so can observe it
 for index in xrange(0, args.l_num_datab):
     time.sleep(1)
-    Popen('''gnome-terminal -e 'bash -c "python server.py -i {0} -d {1}"' '''.format(index, args.datab_config), shell=True)
+    Popen('''gnome-terminal -e 'bash -c "python server.py -i {0} -d {1}"' 2>/dev/null'''.format(index, args.datab_config), shell=True)
 
-time.sleep(3)
+time.sleep(5)
 
 #Set up client
-Popen('''gnome-terminal -e 'bash -c "python client.py -n {0} -c {1} -r {2} -m {3} -q {4} -d {5}"'  '''.format(args.l_num_datab, args.t_priv_num_datab,
-    args.k_req_num_datab, args.v_byz_num_datab, args.query_set_fn, args.datab_config), shell=True)
+call('''gnome-terminal -e 'bash -c "python client.py "' ''', shell=True)
