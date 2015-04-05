@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # Util - functions that are used both by client and server
 # PIR - Goldbergs Protocol
-# CS 54701 Project- Craig West & Michael 
+# CS 54701 Project- Craig West & Michael
 
 #TODO: do all of our multiplications need to be mod n?
 #all coefficients in the created polynomials must be in Zn
@@ -11,10 +11,22 @@
 from random import randint
 import sys
 
+COLORS = {
+    'HEADER' : '\033[95m',
+    'OKBLUE' : '\033[94m',
+    'OKGREEN' : '\033[92m',
+    'WARNING' : '\033[93m',
+    'FAIL' : '\033[91m',
+    'ENDC' : '\033[0m',
+    'BOLD' : '\033[1m',
+    'UNDERLINE' : '\033[4m'
+}
+
+
 #evaluate a given polynomial and x, to return the output y
 def polyEval( poly ,  x ,   mod):
     r = 0
-    for idx, c in enumerate(poly):     
+    for idx, c in enumerate(poly):
         if idx ==0:
             r = c
         else:
@@ -24,7 +36,7 @@ def polyEval( poly ,  x ,   mod):
 #p = [1 ,  4,  6,  4]
 #print polyEval(p, 3)
 
-#matrix multiplication , where m1 is always a vector 
+#matrix multiplication , where m1 is always a vector
 def matrixMult(m1,  m2,  mod):
     m1_c= len( m1)
     m2_r = len( m2)
@@ -41,8 +53,8 @@ def matrixMult(m1,  m2,  mod):
                o = o + int(m1[t]) * int(m2[t][c])
             row.append((o % mod))
     return row
-    
-    
+
+
 #polynomial creation for shamir secret sharing  : deg = degree of polynomial, constant = the secret value , bound = max value for coefficients
 #the poly returned is of the form [constant, x^3, x^2, x ] for a deg=3 polynomial . all values are coefficients
 def createShamirPoly( deg,  constant,  bound):
@@ -54,13 +66,13 @@ def createShamirPoly( deg,  constant,  bound):
     for x in xrange(0, deg-1):    #this originally had just "deg" but this was wrong it was created polynomials 1 degree bigger than needed
         output.append(randint(1, bound-1))
     return output
-            
-                
+
+
 #does lagrange interpolation for set of points, but is tweaked to quickly only compute the intercept value of the polynomial
 #used only for shamir secret reformulation
 def fastLagrangeInter_interceptOnly(points):
     num_points = len(points)
-    f = 0 
+    f = 0
     for idx, point in enumerate(points):
         L = 1
        # print " removed point is:" + str(point)
@@ -71,5 +83,5 @@ def fastLagrangeInter_interceptOnly(points):
                 L = L * (-points[idx2][0]/(point[0] -points[idx2][0]))
                 #print " L = " + str(L)
         #print " f="  + str(f) + "+( " + str(L) + "*" +str(point[1]) + ")"
-        f = f + (L * point[1]) 
+        f = f + (L * point[1])
     return f
