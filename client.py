@@ -35,12 +35,12 @@ def query( hostname,  port,  data_to_send,  n_mod):
     data_to_send.append(n_mod)  #we need to send the server the modulus too, so attaching it as a last item on the list of pi's
     try:
         pickle_data = pickle.dumps(data_to_send)
-        print " Sending Database:",  data_to_send
+        print "[+] Sending Database: {0}\n".format(data_to_send)
         s.sendall(pickle_data)
         data =pickle.loads( s.recv(100))
-        #print data     # data should be a vector of length s (# of words per record/block) 
+        #print data     # data should be a vector of length s (# of words per record/block)
         return data
-      
+
     except:
         print "[-] ERROR: tried to send/recieve a query request to database: {0}".format(serv_addr)
 
@@ -73,7 +73,7 @@ n_mod = p*q
 shamir_indices_I = [ ]
 
 
-print " Databases: " + str(args.l_num_datab) + "  Records: " + str(r_numRecords)  + " Database Config File: " + str(args.datab_config) + " Queries Config File: " + str(args.query_set_fn) + " Interger Ring: " + str(n_mod)  + " p:" + str(p) + " q:" + str(q)
+print "[+] Databases: " + str(args.l_num_datab) + "\n[+] Records: " + str(r_numRecords)  + "\n[+] Database Config File: " + str(args.datab_config) + "\n[+] Queries Config File: " + str(args.query_set_fn) + "\n[+] Interger Ring: " + str(n_mod)  + " p:" + str(p) + " q:" + str(q)
 
 print "\n-------------- PIR-Goldberg Client------------\n"
 
@@ -82,7 +82,7 @@ print "\n-------------- PIR-Goldberg Client------------\n"
 #for x in xrange(0, 8*args.l_num_datab):    #8 is just a random factor, to make the total indice size to draw from 8x as big as needed
 #   temp = randint(1, min(p, q)-1)
 #    shamir_indices_I.append(temp)
-    
+
 for x in xrange(args.l_num_datab):
     shamir_indices_I.append(x +1)
 ########TODO shamir indices above need to be 1,2,3,4,5 etc... the interpolation doesnt work well with random x inputs
@@ -97,8 +97,8 @@ try:
 except IOError:
     print "[-] IO error on {0}".format(args.query_set_fn)
 
-print "------Have list of queries to make"
-print "      " + str(queries)
+print "[+] Have list of queries to make: {0}\n ".format(str(queries))
+
 # read in databases addresses
 #technically this config file does have the information on which databases are malicious/good but this information
 # is not used/read in to the client
@@ -111,28 +111,25 @@ try:
 except IOError:
     print "[-] IO error on {0}".format(args.datab_config)
 
-print "------Have list of databases"
-print "       " + str(datab_hosts)
+print "[+] Have list of databases: {0}\n".format(str(datab_hosts))
 
-#check 
+#check
 if(len(datab_hosts) != args.l_num_datab):
-    print "ERROR: number of databases read in from config file does not match the number of databases told to the client via parameters"
+    print "[-] ERROR: number of databases read in from config file does not match the number of databases told to the client via parameters"
 
 
 
 
 #Conduct queries
-print "------Queries: "
 for idx, q in enumerate(queries):
-    print " conducting query , query index(record wanted): "  + str(q) + "\n"
-   # Choose L random distinct indices alpha-1...alpha-l from set II
+    print "[+] Query index(record wanted): {0}\n".format(str(q))
+    # Choose L random distinct indices alpha-1...alpha-l from set II
     #L_indices = list(set( ))
     #while len(L_indices) < args.l_num_datab:
     #   L_indices.append(choice(shamir_indices_I))
     L_indices = shamir_indices_I
 
-    print "     Created L indices (x inputs)"
-    print "       " + str(L_indices) 
+    print "[+] Created L indices (x inputs): {0}\n".format(str(L_indices))
     #choose/create r random polynomials f-1 ... f-r of degree t. The coefficients are random, the constant terms are 0's except for 1 where r = q (query number)
     r_polyFunc = [ ]
     for x in xrange(r_numRecords):
@@ -141,8 +138,7 @@ for idx, q in enumerate(queries):
         else:
             r_polyFunc.append(createShamirPoly( args.t_priv_num_datab, 0, n_mod ) )
 
-    print "      Created r(num of records) shamir polynomials "
-    print "       " +  str(r_polyFunc)
+    print "[+] Created r(num of records) shamir polynomials: \n{0}\n".format('\n'.join(str(x) for x in r_polyFunc))
     #get p-i 's ( output y) using each corresponding value in L_indices and r_polyFunc. Each server will outputs from every poly function
     pi_server_vectors = [ ]
     for c in xrange(args.l_num_datab):
@@ -151,41 +147,32 @@ for idx, q in enumerate(queries):
             p.append(polyEval(r_polyFunc[f],L_indices[c] , n_mod))
         pi_server_vectors.append(p)
 
-    print "      Created p_i s(vectors of y outputs ) "
-    print "       " + str(pi_server_vectors)
-    
-    
-    
+    print "[+] Created p_i s(vectors of y outputs ): \n{0}\n".format('\n'.join(str(x) for x in pi_server_vectors))
+
+
+
     #make database connections
     #conduct communication
     Rs = [ ]
     for idx2, x in enumerate(datab_hosts):
-        print "     querying database: {0} {1} for query {2}: Record {3}".format(datab_hosts[idx2], datab_ports[idx2], idx, q)
+        print "[+] Querying database: {0} {1} for query {2}: Record {3}".format(datab_hosts[idx2], datab_ports[idx2], idx, q)
         time.sleep(3)
-        R = query(datab_hosts[idx2],  datab_ports[idx2],  pi_server_vectors[idx2], n_mod)  
+        R = query(datab_hosts[idx2],  datab_ports[idx2],  pi_server_vectors[idx2], n_mod)
         Rs.append(R)
-    print "      Rij s Received:\n" + str(Rs)
-    
+    print "[+] Rij s Received: {0}\n".format(''.join(str(x) for x in Rs))
+
     #decode response
-    record = [] 
+    record = []
     for c in xrange(s_words_per_block):
-        pts = [] 
+        pts = []
         for idx, x in enumerate(L_indices):
-            tmp = [x, Rs[idx][c]]   
+            tmp = [x, Rs[idx][c]]
             pts.append(tmp)
-        print "     Points made: "
-        print str(pts)
+        print "[+] Points made: {0}".format(''.join(str(x) for x in pts))
         intercept = fastLagrangeInter_interceptOnly(pts)
         if(intercept< 0):
             record.append(n_mod + (intercept % n_mod))
         else:
             record.append(intercept % n_mod )
-    print " Record Retrieved: " + str(record)
-    print" --------------------------------------------------------------"
-    
-    
-    
-    
-    
-    
-    
+    print "[+] Record Retrieved: " + str(record)
+    print"--------------------------------------------------------------"

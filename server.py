@@ -22,15 +22,15 @@ dbs = [ ]     #this holds all the information from the database config file; thi
 #client thread handler
 def client_handler(client,  db_cont):
     d = client.recv(r_numRecords * block_size_bits)
-    print "     received from client: " + str(len(d))  +  "bits"
+    print "[+] Received from client: {0} bits\n".format(str(len(d)))
     p_i = pickle.loads(d)
     n_mod = p_i.pop(r_numRecords)   # the modulus is attached as the last value on the list of pi's, the list of pi's is r (num of records)-1 in length, so r is the last item
-    print "     pi vector from client: " + str( p_i)
-    print "     modulus receieved from: " + str(n_mod)
+    print "[+] pi vector from client: {0}\n".format(str( p_i))
+    print "[+] modulus receieved from: {0}\n".format(str(n_mod))
     m = matrixMult(p_i, db_cont,  n_mod)
-    print "     Sending R vector back" + str(m)
+    print "[+] Sending R vector back {0}\n".format(str(m))
     client.sendall(pickle.dumps(m))
-    print "-------------------------------------------------------"
+    print "-------------------------------------------------------\n"
     client.close()
 
 argsparser = argparse.ArgumentParser()
@@ -90,8 +90,8 @@ time.sleep(3)
 while True:
     try:
         client, client_addr = sock.accept()
-        print " -----------------------------------------------------"
-        print 'connection from {0}'.format(client_addr)
+        print "-----------------------------------------------------\n"
+        print '[+] Connection from {0}\n'.format(client_addr)
         t = threading.Thread(target = client_handler,  args = [client, db_cont])
         t.start()     #pop a thread off to handle request
 
