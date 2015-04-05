@@ -14,6 +14,7 @@ from Crypto.Util.number import getPrime
 from ConfigParser import SafeConfigParser
 from random import randint, choice
 from Util import *
+from lagrange import *
 import sys
 import os
 import socket
@@ -175,11 +176,8 @@ for idx, q in enumerate(queries):
             tmp = [x, Rs[idx][c]]
             pts.append(tmp)
         print "{0}[+] Points made:{1}{2} {3}{4}".format(COLORS['OKGREEN'], COLORS['ENDC'], COLORS['OKBLUE'], ''.join(str(x) for x in pts), COLORS['ENDC'])
-        intercept = fastLagrangeInter_interceptOnly(pts)
-        if(intercept< 0):
-            record.append(n_mod + (intercept % n_mod))
-        else:
-            record.append(intercept % n_mod )
+        intercept = fastLagrangeInter_interceptOnly(pts, n_mod)
+        record.append(intercept)
     print "{0}[+] Record Retrieved:{1}{2} {3}{4}".format(COLORS['OKGREEN'], COLORS['ENDC'], COLORS['OKBLUE'], str(record), COLORS['ENDC'])
     print"{0}--------------------------------------------------------------{1}".format(COLORS['HEADER'], COLORS['ENDC'])
 

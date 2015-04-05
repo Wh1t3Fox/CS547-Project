@@ -70,7 +70,7 @@ def createShamirPoly( deg,  constant,  bound):
 
 #does lagrange interpolation for set of points, but is tweaked to quickly only compute the intercept value of the polynomial
 #used only for shamir secret reformulation
-def fastLagrangeInter_interceptOnly(points):
+def fastLagrangeInter_interceptOnly(points, n_mod):
     num_points = len(points)
     f = 0
     for idx, point in enumerate(points):
@@ -84,4 +84,8 @@ def fastLagrangeInter_interceptOnly(points):
                 #print " L = " + str(L)
         #print " f="  + str(f) + "+( " + str(L) + "*" +str(point[1]) + ")"
         f = f + (L * point[1])
-    return f
+
+    if f < 0:
+        return n_mod + (f % n_mod)
+    else:
+        return f % n_mod
