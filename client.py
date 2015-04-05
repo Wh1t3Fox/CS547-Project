@@ -179,4 +179,4 @@ for idx, q in enumerate(queries):
 
 #used to keep the terminal open
 #until you want to close
-raw_input()
+raw_input("[+] SUCCESS")
