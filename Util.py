@@ -3,10 +3,7 @@
 # PIR - Goldbergs Protocol
 # CS 54701 Project- Craig West & Michael
 
-#TODO: do all of our multiplications need to be mod n?
-#all coefficients in the created polynomials must be in Zn
-#the polyEval function must produce outputs in Zn
-#
+
 
 from random import randint
 import sys
@@ -33,9 +30,6 @@ def polyEval( poly ,  x ,   mod):
             r = r + (c *( x**idx))
     return r % mod
 
-#p = [1 ,  4,  6,  4]
-#print polyEval(p, 3)
-
 #matrix multiplication , where m1 is always a vector
 def matrixMult(m1,  m2,  mod):
     m1_c= len( m1)
@@ -50,7 +44,7 @@ def matrixMult(m1,  m2,  mod):
         for c in xrange(0, m2_c):
             o = 0
             for t in xrange(0, m1_c):
-               o = o + int(m1[t]) * int(m2[t][c])
+               o += int(m1[t]) * int(m2[t][c])
             row.append((o % mod))
     return row
 
@@ -63,7 +57,7 @@ def createShamirPoly( deg,  constant,  bound):
         print("{0}[-] ERROR: Degree of polynomial requested < 0{1}".format(COLORS['FAIL'], COLORS['ENDC']))
         sys.exit(1)
     output = [constant]
-    for x in xrange(0, deg-1):    #this originally had just "deg" but this was wrong it was created polynomials 1 degree bigger than needed
+    for x in xrange(0, deg-1):
         output.append(randint(1, bound-1))
     return output
 
@@ -75,15 +69,10 @@ def fastLagrangeInter_interceptOnly(points, n_mod):
     f = 0
     for idx, point in enumerate(points):
         L = 1
-       # print " removed point is:" + str(point)
         for idx2 in xrange(num_points):
             if (idx2 !=idx):
-                #print "point on: " + str(points[idx2][0]) + "," + str(points[idx2][1])
-                #print " doing: " + str(L) + " * (-" + str(points[idx2][0]) + " ) / (" + str(point[0]) + "- " + str(points[idx2][0]) + " )"
                 L *= (-points[idx2][0]/(point[0] -points[idx2][0]))
-                #print " L = " + str(L)
-        #print " f="  + str(f) + "+( " + str(L) + "*" +str(point[1]) + ")"
-        f = f + (L * point[1])
+        f += (L * point[1])
 
     if f < 0:
         return n_mod + (f % n_mod)

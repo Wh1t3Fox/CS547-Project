@@ -82,7 +82,6 @@ print "{0}[+] Queries Config File:{1}{2} {3}{4}".format(COLORS['OKGREEN'], COLOR
 print "{0}[+] Interger Ring:{1}{2} {3} p: {4} q: {5}".format(COLORS['OKGREEN'], COLORS['ENDC'], COLORS['OKBLUE'], str(n_mod), str(p), str(q), COLORS['ENDC'])
 
 
-########TODO shamir indices above need to be 1,2,3,4,5 etc... the interpolation doesnt work well with random x inputs
 #getting set II which is a set of proper indices ( x input values) to use with the poly functions on Shamir
 #for x in xrange(0, args.l_num_datab):    #8 is just a random factor, to make the total indice size to draw from 8x as big as needed
 #   temp = randint(1, min(p, q)-1)
@@ -128,10 +127,7 @@ if(len(datab_hosts) != args.l_num_datab):
 #Conduct queries
 for idx, q in enumerate(queries):
     print "{0}[+] Query index(record wanted):{1}{2} {3}{4}\n".format(COLORS['OKGREEN'], COLORS['ENDC'], COLORS['OKBLUE'], str(q), COLORS['ENDC'])
-    # Choose L random distinct indices alpha-1...alpha-l from set II
-    #L_indices = list(set( ))
-    #while len(L_indices) < args.l_num_datab:
-    #   L_indices.append(choice(shamir_indices_I))
+
     L_indices = shamir_indices_I
 
     print "{0}[+] Created L indices (x inputs):{1}{2} {3}{4}\n".format(COLORS['OKGREEN'], COLORS['ENDC'], COLORS['OKBLUE'], str(L_indices), COLORS['ENDC'])
