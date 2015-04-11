@@ -14,7 +14,6 @@ from Crypto.Util.number import getPrime
 from ConfigParser import SafeConfigParser
 from random import randint, choice
 from Util import *
-from lagrange import *
 import sys
 import os
 import socket
